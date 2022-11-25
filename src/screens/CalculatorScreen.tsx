@@ -1,3 +1,4 @@
+/* eslint-disable curly */
 import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import { CalcButton } from '../components/CalcButton';
@@ -12,8 +13,35 @@ export const CalculatorScreen = () => {
     setNumber('0');
   };
 
-  const makeNumber = (textNumber: string) => {
-    setNumber(number + textNumber);
+  const makeNumber = (numberText: string) => {
+    // No aceptar doble punto
+    if (number.includes('.') && numberText === '.') return;
+    // Comprobar el 0 inicial
+    if (number.startsWith('0') || number.startsWith('-0')) {
+      // Punto decimal
+      if (numberText === '.') {
+        setNumber(number + numberText);
+        // Evaluar si es otro cero y hay un punto
+      } else if (numberText === '0' && number.includes('.')) {
+        setNumber(number + numberText);
+        // Evaluar si es diferente de cero y no tiene un punto
+      } else if (numberText !== '0' && !number.includes('.')) {
+        setNumber(numberText);
+        // Evitar 0000.0
+      } else if (numberText === '0' && !number.includes('.')) {
+        setNumber(number);
+      }
+    } else {
+      setNumber(number + numberText);
+    }
+  };
+
+  const positiveNegative = () => {
+    if (number.includes('-')) {
+      setNumber(number.replace('-', ''));
+    } else {
+      setNumber('-' + number);
+    }
   };
 
   return (
@@ -25,7 +53,7 @@ export const CalculatorScreen = () => {
       <View style={styles.row}>
         {/* Button */}
         <CalcButton text="C" color="#9b9b9b" action={clean} />
-        <CalcButton text="+/-" color="#9b9b9b" action={clean} />
+        <CalcButton text="+/-" color="#9b9b9b" action={positiveNegative} />
         <CalcButton text="%" color="#9b9b9b" action={clean} />
         <CalcButton text="/" color="#ff9427" action={clean} />
       </View>
